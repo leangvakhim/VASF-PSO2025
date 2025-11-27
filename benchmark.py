@@ -187,7 +187,7 @@ def run_benchmark():
     max_iter = 1000
     times = 30
 
-    list_val = {bm['name']: [] for bm in FUNCTIONS}
+    list_val = {bm[0]: [] for bm in FUNCTIONS}
     # results = {bm['name']: [] for bm in FUNCTIONS}
 
     for name, func, bounds in FUNCTIONS:
