@@ -1,6 +1,7 @@
 import numpy as np
 from vasf_pso import vasf_pso
 from wsn import wsn
+from benchmark import run_benchmark
 
 print("1. Coverage")
 print("2. Benchmark")
@@ -25,3 +26,6 @@ if opt == 1:
     best_node = best_pos_flat.reshape(-1, 2)
 
     wsn_env.plot_results(best_node, area_size, sensing_radius, history, best_cov)
+
+elif opt == 2:
+    run_benchmark()

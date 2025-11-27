@@ -2,40 +2,36 @@ import numpy as np
 from tqdm import tqdm
 
 class vasf_pso:
-    def __init__(self, num_particles, dim, bounds, max_iter, wsn_env):
+    def __init__(self, num_particles, dim, bounds, max_iter, fitness_function):
         self.num_particles = num_particles
         self.dim = dim
         self.bounds = bounds
         self.max_iter = max_iter
-        self.wsn_env = wsn_env
+        self.fitness_function = fitness_function
 
         # vasf_pso paramenters
         self.w_min = 0.2
         self.w_max = 0.9
-        self.v_max = 2.0
+        self.v_max = (bounds[1] - bounds[0]) * 0.2
 
         self.c1_i, self.c1_f = 2.5, 0.5
         self.c2_i, self.c2_f = 0.5, 2.5
 
         self.gbest_position = None
-        self.gbest_fitness = -1.0
+        self.gbest_fitness = np.inf
 
         self.positions = np.zeros((num_particles, dim))
         self.velocities = np.zeros((num_particles, dim))
         self.pbest_positions = np.zeros((num_particles, dim))
-        self.pbest_fitness = -np.ones(num_particles)
+        self.pbest_fitness = np.full(num_particles, np.inf)
 
         self.initialize_swarm()
 
     def initialize_swarm(self):
-        hammersley_points = self.wsn_env.generate_hammersley_positions(
-            self.num_particles, self.dim, self.bounds
-        )
-
-        self.positions = hammersley_points
-        self.pbest_positions = np.copy(self.positions)
-
+        lower_bound, upper_bound = self.bounds
+        self.positions = np.random.uniform(lower_bound, upper_bound, (self.num_particles, self.dim))
         self.velocities = np.random.uniform(-self.v_max, self.v_max, (self.num_particles, self.dim))
+        self.pbest_positions = np.copy(self.positions)
 
     def update_search_factor(self, velocity_magnitude):
         # eq 9
@@ -52,12 +48,13 @@ class vasf_pso:
             c2 = (self.c2_f - self.c2_i) * (k / self.max_iter) + self.c2_i
 
             for i in range(self.num_particles):
+                self.positions[i] = np.clip(self.positions[i], self.bounds[0], self.bounds[1])
                 node_positions = self.positions[i].reshape(-1, 2)
                 # eq 4
-                fitness = self.wsn_env.calculate_coverage_rate(node_positions)
+                fitness = self.fitness_function(self.positions[i])
 
                 # update Pbest
-                if fitness > self.pbest_fitness[i]:
+                if fitness < self.pbest_fitness[i]:
                     self.pbest_fitness[i] = fitness
                     self.pbest_positions[i] = self.positions[i].copy()
 
