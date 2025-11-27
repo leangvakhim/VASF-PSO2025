@@ -63,6 +63,8 @@ class wsn:
         mask_zero = dists >= (self.rc + self.re)
         mask_decay = (~mask_sure) & (~mask_zero)
 
+        probs[mask_sure] = 1.0
+
         # decay calculation
         if np.any(mask_decay):
             d_decay = dists[mask_decay]
