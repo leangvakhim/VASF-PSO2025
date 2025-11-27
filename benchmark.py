@@ -170,7 +170,7 @@ FUNCTIONS = [
     # ("F9 Griewank", f9_griewank, [-600, 600], 120),
     # ("F10 Rastrigin", f10_rastrigin, [-5.12, 5.12], 1),
     # ("F11 Ackley", f11_ackley, [-32, 32], 6.4),
-    # ("F12 Salomon", f12_salomon, [-20, 20], 4,),
+    # ("F12 Salomon", f12_salomon, [-20, 20], 4),
     # ("F13 Xin-She Yang", f13_xin_she_yang, [-5, 5], 1),
     # ("F14 Zakharov", f14_zakharov, [-10, 10]),
     # ("F15 Schaffer F6", f15_schaffer_f6, [-100, 100]),
@@ -180,8 +180,8 @@ FUNCTIONS = [
 ]
 
 def run_benchmark():
-    print(f"{'Function':<25} | {'Best Fitness':<15} | {'Status'}")
-    print("-" * 55)
+    # print(f"{'Function':<25} | {'Best Fitness':<15} | {'Status'}")
+    # print("-" * 55)
 
     dim = 30
     pop_size = 36
@@ -198,7 +198,16 @@ def run_benchmark():
 
             init_pos = dummy_wsn.generate_hammersley_positions(pop_size, dim, bounds)
 
-            optimizer = vasf_pso(pop_size, dim, bounds, max_iter, func, init_pos, v_max)
+            optimizer = vasf_pso(
+                pop_size,
+                dim,
+                bounds,
+                max_iter,
+                func,
+                init_pos,
+                v_max
+            )
+
             _, best_fit, history = optimizer.optimize()
 
             # results[name].append(history)

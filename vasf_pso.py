@@ -16,7 +16,7 @@ class vasf_pso:
         if v_max is not None:
             self.v_max = v_max
         else:
-            self.v_max = (bounds[1] - bounds[0]) * 0.2
+            self.v_max = (bounds[1] - bounds[0]) * 0.1
 
         self.c1_i, self.c1_f = 2.5, 0.5
         self.c2_i, self.c2_f = 0.5, 2.5
@@ -24,9 +24,14 @@ class vasf_pso:
         self.gbest_position = None
         self.gbest_fitness = np.inf
 
-        self.initial_positions = initial_positions
-        self.positions = np.zeros((num_particles, dim))
-        self.velocities = np.zeros((num_particles, dim))
+        if initial_positions is not None:
+            self.positions = initial_positions.copy()
+        else:
+            self.positions = np.random.uniform(bounds[0], bounds[1], (self.num_particles, dim))
+
+        # self.positions = np.zeros((num_particles, dim))
+        # self.velocities = np.zeros((num_particles, dim))
+        self.velocities = np.random.uniform(-self.v_max, self.v_max, (self.num_particles, dim))
         self.pbest_positions = np.zeros((num_particles, dim))
         self.pbest_fitness = np.full(num_particles, np.inf)
 
