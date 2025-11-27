@@ -2,7 +2,6 @@ import numpy as np
 from tqdm import tqdm
 
 class vasf_pso:
-    # 1. Update arguments to accept initial_positions and v_max
     def __init__(self, num_particles, dim, bounds, max_iter, fitness_function, initial_positions=None, v_max=None):
         self.num_particles = num_particles
         self.dim = dim
@@ -10,14 +9,12 @@ class vasf_pso:
         self.max_iter = max_iter
         self.fitness_function = fitness_function
 
-        # 2. Store initial_positions BEFORE calling initialize_swarm
         self.initial_positions = initial_positions
 
-        # 3. Handle v_max logic (Use passed value or default to paper's ~10% logic)
         if v_max is not None:
             self.v_max = v_max
         else:
-            self.v_max = (bounds[1] - bounds[0]) * 0.2  # Default fallback
+            self.v_max = (bounds[1] - bounds[0]) * 0.2
 
         # vasf_pso parameters
         self.w_min = 0.2
@@ -34,19 +31,16 @@ class vasf_pso:
         self.pbest_positions = np.zeros((num_particles, dim))
         self.pbest_fitness = np.full(num_particles, np.inf)
 
-        # 4. NOW call initialize_swarm (after self.initial_positions is set)
         self.initialize_swarm()
 
     def initialize_swarm(self):
         lower_bound, upper_bound = self.bounds
 
-        # 5. Use Hammersley positions if they were provided
         if self.initial_positions is not None:
             self.positions = self.initial_positions.copy()
         else:
             self.positions = np.random.uniform(lower_bound, upper_bound, (self.num_particles, self.dim))
 
-        # Velocities are always random
         self.velocities = np.random.uniform(-self.v_max, self.v_max, (self.num_particles, self.dim))
         self.pbest_positions = np.copy(self.positions)
 

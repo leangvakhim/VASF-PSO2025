@@ -188,7 +188,7 @@ def run_benchmark():
     max_iter = 1000
     times = 30
 
-    dummy_wsn = wsn((100,100), 5, 1)
+    helper = wsn((100,100), 5, 1)
 
     list_val = {bm[0]: [] for bm in FUNCTIONS}
     # results = {bm['name']: [] for bm in FUNCTIONS}
@@ -196,7 +196,7 @@ def run_benchmark():
     for name, func, bounds, v_max in FUNCTIONS:
         for _ in range(times):
 
-            init_pos = dummy_wsn.generate_hammersley_positions(pop_size, dim, bounds)
+            init_pos = helper.generate_hammersley_positions(pop_size, dim, bounds)
 
             optimizer = vasf_pso(
                 pop_size,

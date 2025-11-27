@@ -13,7 +13,7 @@ if opt == 1:
     sensing_radius = 5
     sensing_error = 1
     swarm_size = 30
-    max_iter = 100
+    max_iter = 1000
     dim = num_nodes * 2
     bounds = [0, 50]
 
