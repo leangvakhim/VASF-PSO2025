@@ -19,9 +19,14 @@ if opt == 1:
 
     wsn_env = wsn(area_size, sensing_radius, sensing_error, grid_resolution=1.0)
 
-    optimizer = vasf_pso(swarm_size, dim, bounds, max_iter, wsn_env)
+    fitness_func = lambda pos: -wsn_env.calculate_coverage_rate(pos.reshape(-1, 2))
+
+    optimizer = vasf_pso(swarm_size, dim, bounds, max_iter, fitness_func)
 
     best_pos_flat, best_cov, history = optimizer.optimize()
+
+    best_cov = -best_cov
+    history = [-h for h in history]
 
     best_node = best_pos_flat.reshape(-1, 2)
 
