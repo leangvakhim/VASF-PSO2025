@@ -59,7 +59,7 @@ class vasf_pso:
                     self.pbest_positions[i] = self.positions[i].copy()
 
                 # update Gbest
-                if fitness > self.gbest_fitness:
+                if fitness < self.gbest_fitness:
                     self.gbest_fitness = fitness
                     self.gbest_position = self.positions[i].copy()
 

@@ -185,25 +185,43 @@ def run_benchmark():
     dim = 30
     pop_size = 30
     max_iter = 1000
+    times = 30
 
-    results = {}
+    list_val = {bm['name']: [] for bm in FUNCTIONS}
+    # results = {bm['name']: [] for bm in FUNCTIONS}
 
     for name, func, bounds in FUNCTIONS:
-        optimizer = vasf_pso(pop_size, dim, bounds, max_iter, func)
-        best_fit, history = optimizer.optimize()
+        for _ in range(times):
+            optimizer = vasf_pso(pop_size, dim, bounds, max_iter, func)
+            _, best_fit, history = optimizer.optimize()
+
+            # results[name].append(history)
+            list_val[name].append(best_fit)
 
         print(f"{name:<25} | {best_fit:15.6e} | Done")
-        results[name] = history
+        # results[name] = history
+
+    for name, scores in list_val.items():
+        print(f"name is: {name}")
+        mean_val = np.mean(scores)
+        std_val = np.std(scores)
+        min_val = np.max(scores)
+        max_val = np.min(scores)
+
+        print(f"Mean values: {mean_val:.4e}")
+        print(f"Std values: {std_val:.4e}")
+        print(f"Min values: {min_val:.4e}")
+        print(f"Max values: {max_val:.4e}")
 
     # Plot specific examples (e.g., Unimodal vs Multimodal)
-    plt.figure(figsize=(10, 6))
-    plt.plot(results["F2 Sphere"], label="Sphere (Unimodal)")
-    plt.plot(results["F10 Rastrigin"], label="Rastrigin (Multimodal)")
-    plt.plot(results["F11 Ackley"], label="Ackley (Multimodal)")
-    plt.yscale('log')
-    plt.xlabel("Iterations")
-    plt.ylabel("Fitness (Log Scale)")
-    plt.title("VASF-PSO Convergence on Benchmarks")
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+    # plt.figure(figsize=(10, 6))
+    # plt.plot(results["F2 Sphere"], label="Sphere (Unimodal)")
+    # plt.plot(results["F10 Rastrigin"], label="Rastrigin (Multimodal)")
+    # plt.plot(results["F11 Ackley"], label="Ackley (Multimodal)")
+    # plt.yscale('log')
+    # plt.xlabel("Iterations")
+    # plt.ylabel("Fitness (Log Scale)")
+    # plt.title("VASF-PSO Convergence on Benchmarks")
+    # plt.legend()
+    # plt.grid(True)
+    # plt.show()
