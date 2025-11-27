@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from vasf_pso import vasf_pso
+from wsn import wsn
 
 def f1_schwefel_2_21(x):
     """Schwefel 2.21: Max|x_i|"""
@@ -158,24 +159,24 @@ def f18_composition_proxy(x):
     return 0.5 * f11_ackley(x) + 0.5 * f9_griewank(x)
 
 FUNCTIONS = [
-    ("F1 Schwefel 2.21", f1_schwefel_2_21, [-100, 100]),
-    ("F2 Sphere", f2_sphere, [-100, 100]),
-    ("F3 Schwefel 2.22", f3_schwefel_2_22, [-10, 10]),
-    ("F4 Schwefel 1.2", f4_schwefel_1_2, [-100, 100]),
-    ("F5 Quartic Noise", f5_quartic_noise, [-1.28, 1.28]),
-    ("F6 Rosenbrock", f6_rosenbrock, [-30, 30]),
-    ("F7 Penalized 2", f7_penalized_2, [-50, 50]),
-    ("F8 Penalized 1", f8_penalized_1, [-50, 50]),
-    ("F9 Griewank", f9_griewank, [-600, 600]),
-    ("F10 Rastrigin", f10_rastrigin, [-5.12, 5.12]),
-    ("F11 Ackley", f11_ackley, [-32, 32]),
-    ("F12 Salomon", f12_salomon, [-20, 20]),
-    ("F13 Xin-She Yang", f13_xin_she_yang, [-5, 5]),
-    ("F14 Zakharov", f14_zakharov, [-10, 10]),
-    ("F15 Schaffer F6", f15_schaffer_f6, [-100, 100]),
-    ("F16 Levy", f16_levy, [-10, 10]),
-    ("F17 Hybrid (Proxy)", f17_hybrid_proxy, [-100, 100]),
-    ("F18 Composition (Proxy)", f18_composition_proxy, [-100, 100]),
+    ("F1 Schwefel 2.21", f1_schwefel_2_21, [-100, 100], 20),
+    ("F2 Sphere", f2_sphere, [-100, 100], 20),
+    # ("F3 Schwefel 2.22", f3_schwefel_2_22, [-10, 10], 2),
+    # ("F4 Schwefel 1.2", f4_schwefel_1_2, [-100, 100], 20),
+    # ("F5 Quartic Noise", f5_quartic_noise, [-1.28, 1.28], 0.25),
+    # ("F6 Rosenbrock", f6_rosenbrock, [-30, 30], 6),
+    # ("F7 Penalized 2", f7_penalized_2, [-50, 50], 10),
+    # ("F8 Penalized 1", f8_penalized_1, [-50, 50], 10),
+    # ("F9 Griewank", f9_griewank, [-600, 600], 120),
+    # ("F10 Rastrigin", f10_rastrigin, [-5.12, 5.12], 1),
+    # ("F11 Ackley", f11_ackley, [-32, 32], 6.4),
+    # ("F12 Salomon", f12_salomon, [-20, 20], 4,),
+    # ("F13 Xin-She Yang", f13_xin_she_yang, [-5, 5], 1),
+    # ("F14 Zakharov", f14_zakharov, [-10, 10]),
+    # ("F15 Schaffer F6", f15_schaffer_f6, [-100, 100]),
+    # ("F16 Levy", f16_levy, [-10, 10]),
+    # ("F17 Hybrid (Proxy)", f17_hybrid_proxy, [-100, 100]),
+    # ("F18 Composition (Proxy)", f18_composition_proxy, [-100, 100]),
 ]
 
 def run_benchmark():
@@ -183,22 +184,27 @@ def run_benchmark():
     print("-" * 55)
 
     dim = 30
-    pop_size = 30
+    pop_size = 36
     max_iter = 1000
     times = 30
+
+    dummy_wsn = wsn((100,100), 5, 1)
 
     list_val = {bm[0]: [] for bm in FUNCTIONS}
     # results = {bm['name']: [] for bm in FUNCTIONS}
 
-    for name, func, bounds in FUNCTIONS:
+    for name, func, bounds, v_max in FUNCTIONS:
         for _ in range(times):
-            optimizer = vasf_pso(pop_size, dim, bounds, max_iter, func)
+
+            init_pos = dummy_wsn.generate_hammersley_positions(pop_size, dim, bounds)
+
+            optimizer = vasf_pso(pop_size, dim, bounds, max_iter, func, init_pos, v_max)
             _, best_fit, history = optimizer.optimize()
 
             # results[name].append(history)
             list_val[name].append(best_fit)
 
-        print(f"{name:<25} | {best_fit:15.6e} | Done")
+        # print(f"{name:<25} | {best_fit:15.6e} | Done")
         # results[name] = history
 
     for name, scores in list_val.items():

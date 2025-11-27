@@ -2,7 +2,7 @@ import numpy as np
 from tqdm import tqdm
 
 class vasf_pso:
-    def __init__(self, num_particles, dim, bounds, max_iter, fitness_function):
+    def __init__(self, num_particles, dim, bounds, max_iter, fitness_function, initial_positions=None, v_max=None):
         self.num_particles = num_particles
         self.dim = dim
         self.bounds = bounds
@@ -12,7 +12,11 @@ class vasf_pso:
         # vasf_pso paramenters
         self.w_min = 0.2
         self.w_max = 0.9
-        self.v_max = (bounds[1] - bounds[0]) * 0.2
+
+        if v_max is not None:
+            self.v_max = v_max
+        else:
+            self.v_max = (bounds[1] - bounds[0]) * 0.2
 
         self.c1_i, self.c1_f = 2.5, 0.5
         self.c2_i, self.c2_f = 0.5, 2.5
@@ -20,6 +24,7 @@ class vasf_pso:
         self.gbest_position = None
         self.gbest_fitness = np.inf
 
+        self.initial_positions = initial_positions
         self.positions = np.zeros((num_particles, dim))
         self.velocities = np.zeros((num_particles, dim))
         self.pbest_positions = np.zeros((num_particles, dim))
@@ -29,7 +34,12 @@ class vasf_pso:
 
     def initialize_swarm(self):
         lower_bound, upper_bound = self.bounds
-        self.positions = np.random.uniform(lower_bound, upper_bound, (self.num_particles, self.dim))
+
+        if self.initial_positions is not None:
+            self.positions = self.initial_positions.copy()
+        else:
+            self.positions = np.random.uniform(lower_bound, upper_bound, (self.num_particles, self.dim))
+
         self.velocities = np.random.uniform(-self.v_max, self.v_max, (self.num_particles, self.dim))
         self.pbest_positions = np.copy(self.positions)
 
