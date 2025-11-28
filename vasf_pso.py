@@ -80,11 +80,11 @@ class vasf_pso:
             for i in range(self.num_particles):
                 vel_meg = np.linalg.norm(self.velocities[i])
 
-                max_mag = self.v_max * np.sqrt(self.dim)
+                # max_mag = self.v_max * np.sqrt(self.dim)
 
                 # eq 9
-                ratio = vel_meg / max_mag
-                w = self.update_search_factor(ratio)
+                # ratio = vel_meg / max_mag
+                w = self.update_search_factor(vel_meg)
                 # w = self.update_search_factor(vel_meg)
 
                 # random number r1, r2
