@@ -65,19 +65,19 @@ class wsn:
 
         for simplex in tri.simplices:
             pts = node_positions[simplex]
-            a, b, c = pts[0], pts[1], pts[2]
+            A, B, C = pts[0], pts[1], pts[2]
 
-            a = np.linalg.norm(b - c)
-            b = np.linalg.norm(a - c)
-            c = np.linalg.norm(a - b)
+            a = np.linalg.norm(B - C)
+            b = np.linalg.norm(A - C)
+            c = np.linalg.norm(A - B)
 
-            area = self.get_triangle_area(a, b, c)
+            area = self.get_triangle_area(A, B, C)
+
             if area == 0: continue
 
             circumradius = (a * b * c) / (4 * area)
 
             if circumradius > self.rc:
-                # eq 11 & 12
                 total_hole_area += area
                 hole_triangles.append(pts)
 
