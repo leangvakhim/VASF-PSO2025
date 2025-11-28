@@ -46,8 +46,7 @@ class vasf_pso:
 
     def update_search_factor(self, velocity_magnitude):
         # eq 9
-        max_magnitude = self.v_max * np.sqrt(self.dim)
-        ratio = velocity_magnitude / max_magnitude
+        ratio = velocity_magnitude / self.v_max
         w = self.w_min + (self.w_max - self.w_min) * (1.0 / (1.0 + ratio))
         return w
 

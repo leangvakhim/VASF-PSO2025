@@ -21,6 +21,8 @@ if opt == 1:
 
     fitness_func = lambda pos: -wsn_env.calculate_coverage_rate(pos.reshape(-1, 2))
 
+    # hole_area, _ = lambda pos: wsn_env.calculate_delaunay_holes(pos.reshape(-1, 2))
+
     optimizer = vasf_pso(swarm_size, dim, bounds, max_iter, fitness_func)
 
     best_pos_flat, best_cov, history = optimizer.optimize()

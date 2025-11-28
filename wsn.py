@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from scipy.spatial import Delaunay
 
 class wsn:
     def __init__(self, area_size, sensing_radius, r_error, grid_resolution=1.0):
@@ -51,6 +53,36 @@ class wsn:
 
         return positions
 
+    def get_triangle_area(self, a, b, c):
+        # eq 13
+        return 0.5 * np.abs(a[0] * (b[1] - c[1]) + b[0] * (c[1] - a[1]) + c[0] * (a[1] - b[1]))
+
+    def calculate_delaunay_holes(self, node_positions):
+        tri = Delaunay(node_positions)
+
+        total_hole_area = 0
+        hole_triangles = []
+
+        for simplex in tri.simplices:
+            pts = node_positions[simplex]
+            a, b, c = pts[0], pts[1], pts[2]
+
+            a = np.linalg.norm(b - c)
+            b = np.linalg.norm(a - c)
+            c = np.linalg.norm(a - b)
+
+            area = self.get_triangle_area(a, b, c)
+            if area == 0: continue
+
+            circumradius = (a * b * c) / (4 * area)
+
+            if circumradius > self.rc:
+                # eq 11 & 12
+                total_hole_area += area
+                hole_triangles.append(pts)
+
+        return total_hole_area, hole_triangles
+
     def calculate_coverage_rate(self, node_positions):
         # eq 4
         diff = self.grid_points[:, np.newaxis, :] - node_positions[np.newaxis, :, :]
@@ -100,12 +132,22 @@ class wsn:
         ax2.set_xlabel('X (m)')
         ax2.set_ylabel('Y (m)')
 
+        _, hole_triangles = self.calculate_delaunay_holes(nodes)
+        for tri_pts in hole_triangles:
+            polygon = patches.Polygon(tri_pts, closed=True,
+                                      edgecolor='blue', facecolor='blue',
+                                      alpha=0.1, linestyle='--')
+            ax2.add_patch(polygon)
+
         for node in nodes:
             circle = plt.Circle(node, radius, color='g', alpha=0.3, fill=True)
             ax2.add_artist(circle)
             circle_border = plt.Circle(node, radius, color='k', alpha=0.5, fill=False)
             ax2.add_artist(circle_border)
             ax2.plot(node[0], node[1], 'k.', markersize=5)
+
+        tri = Delaunay(nodes)
+        ax2.triplot(nodes[:,0], nodes[:,1], tri.simplices.copy(), color='black', alpha=0.3, linewidth=0.5)
 
         plt.tight_layout()
         plt.show()
