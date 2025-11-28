@@ -47,6 +47,8 @@ class wsn:
                 if d == 0:
                     val = (i + 1) / num_particles
                 else:
+                    # val = self.van_der_corput(i + 1, base)
+                    base = base_primes[(d - 1) % len(base_primes)]
                     val = self.van_der_corput(i + 1, base)
 
                 positions[i, d] = bounds[0] + val * (bounds[1] - bounds[0])

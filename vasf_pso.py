@@ -46,7 +46,8 @@ class vasf_pso:
 
     def update_search_factor(self, velocity_magnitude):
         # eq 9
-        ratio = velocity_magnitude / self.v_max
+        max_magnitude = self.v_max * np.sqrt(self.dim)
+        ratio = velocity_magnitude / max_magnitude
         w = self.w_min + (self.w_max - self.w_min) * (1.0 / (1.0 + ratio))
         return w
 
@@ -79,8 +80,12 @@ class vasf_pso:
             for i in range(self.num_particles):
                 vel_meg = np.linalg.norm(self.velocities[i])
 
+                max_mag = self.v_max * np.sqrt(self.dim)
+
                 # eq 9
-                w = self.update_search_factor(vel_meg)
+                ratio = vel_meg / max_mag
+                w = self.update_search_factor(ratio)
+                # w = self.update_search_factor(vel_meg)
 
                 # random number r1, r2
                 r1 = np.random.rand(self.dim)
